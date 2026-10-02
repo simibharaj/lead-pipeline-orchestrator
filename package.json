@@ -1,0 +1,15 @@
+{
+  "name": "lead-pipeline-orchestrator",
+  "version": "0.1.0",
+  "description": "Normalizes and scores inbound lead payloads (demo).",
+  "scripts": { "test": "jest" },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.0"
+  },
+  "jest": { "preset": "ts-jest", "testEnvironment": "node" }
+}
