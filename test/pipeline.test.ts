@@ -37,3 +37,27 @@ describe("InboundLeadTransformer", () => {
     expect(T.processRecord({}).fullName).toBe("Anonymous Lead");
   });
 });
+
+describe("parseAssets", () => {
+  const parse = T.parseAssets;
+  it("parses plain numbers and currency strings", () => {
+    expect(parse(250000)).toBe(250000);
+    expect(parse("$250,000")).toBe(250000);
+  });
+  it("parses k and m suffixes", () => {
+    expect(parse("250k")).toBe(250000);
+    expect(parse("1.5m")).toBe(1500000);
+    expect(parse(" 2M ")).toBe(2000000);
+  });
+  it("returns 0 for junk, negative, or missing input", () => {
+    expect(parse("abc")).toBe(0);
+    expect(parse("-5000")).toBe(0);
+    expect(parse(-5)).toBe(0);
+    expect(parse(undefined)).toBe(0);
+  });
+  it("scores a '1.5m' lead as high value instead of disqualifying it", () => {
+    const lead = T.processRecord({ first_name: "Jane", last_name: "Doe", estimated_liquid_assets: "1.5m", time_horizon_years: 2 });
+    expect(lead.liquidAssets).toBe(1500000);
+    expect(lead.priorityTier).toBe("TIER_1_EXPEDITE");
+  });
+});
