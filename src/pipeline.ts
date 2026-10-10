@@ -38,11 +38,23 @@ export class InboundLeadTransformer {
     return { score, tier };
   }
 
+  /**
+   * Parses an asset amount. Accepts numbers or strings such as "$250,000", "250k", "1.5m".
+   * A trailing k/m multiplies by 1,000 / 1,000,000. Unparseable or negative input returns 0.
+   */
+  public static parseAssets(raw?: number | string): number {
+    if (typeof raw === "number") return Number.isFinite(raw) && raw > 0 ? raw : 0;
+    if (!raw) return 0;
+    const match = raw.trim().toLowerCase().match(/^\$?\s*([0-9][0-9,]*\.?[0-9]*|\.[0-9]+)\s*([km])?$/);
+    if (!match) return 0;
+    const base = parseFloat(match[1].replace(/,/g, ""));
+    if (Number.isNaN(base)) return 0;
+    const mult = match[2] === "k" ? 1_000 : match[2] === "m" ? 1_000_000 : 1;
+    return base * mult;
+  }
+
   public static processRecord(payload: RawInboundPayload): NormalizedLead {
-    const assets =
-      typeof payload.estimated_liquid_assets === "string"
-        ? parseFloat(payload.estimated_liquid_assets.replace(/[^0-9.-]+/g, "")) || 0
-        : payload.estimated_liquid_assets || 0;
+    const assets = this.parseAssets(payload.estimated_liquid_assets);
     const horizon =
       typeof payload.time_horizon_years === "string"
         ? parseInt(payload.time_horizon_years, 10) || 0
