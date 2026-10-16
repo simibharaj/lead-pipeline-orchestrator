@@ -14,6 +14,29 @@ npm install
 npm test
 ```
 
+To score a JSON file containing an array of lead payloads:
+
+```sh
+npm run score-leads -- leads.json
+```
+
+Example `leads.json` (fake demo data):
+
+```json
+[
+  {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "contact_email": "jane.doe@example.com",
+    "contact_phone": "555-0101",
+    "estimated_liquid_assets": "350k",
+    "time_horizon_years": 2
+  }
+]
+```
+
+The CLI prints only each row's tier and score, not names or contact details. The input is processed locally and is not uploaded.
+
 ## Notes
 - A demo built to show the pattern: validate at the boundary, keep rules readable, test the edge cases. Thresholds are examples, not tuned on real data.
 - No real leads, clients, or credentials are in this repo.
