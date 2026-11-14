@@ -55,10 +55,10 @@ export class InboundLeadTransformer {
 
   public static processRecord(payload: RawInboundPayload): NormalizedLead {
     const assets = this.parseAssets(payload.estimated_liquid_assets);
+    const rawHorizon = payload.time_horizon_years;
+    const parsedHorizon = typeof rawHorizon === "string" ? Number(rawHorizon) : rawHorizon;
     const horizon =
-      typeof payload.time_horizon_years === "string"
-        ? parseInt(payload.time_horizon_years, 10) || 0
-        : payload.time_horizon_years || 0;
+      typeof parsedHorizon === "number" && Number.isFinite(parsedHorizon) ? parsedHorizon : 0;
 
     const { score, tier } = this.scoreLead(assets, horizon);
     const fullName = `${(payload.first_name || "").trim()} ${(payload.last_name || "").trim()}`.trim();
